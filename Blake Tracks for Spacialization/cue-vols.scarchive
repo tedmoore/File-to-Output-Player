@@ -1,0 +1,57 @@
+var o, p;
+o = [
+	Dictionary.prNew,  Array.prNew(32),  Dictionary.prNew,  Array.prNew(64),  
+	Dictionary.prNew,  Array.prNew(64)
+];
+p = [
+	// Dictionary
+	0, [ array: o[1],  size: 2 ],  
+	// Array
+	1, [ nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  2,  o[2],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  1,  o[4] ],  
+	// Dictionary
+	2, [ array: o[3],  size: 11 ],  
+	// Array
+	3, [ 11,  0.0,  5,  0.0,  
+		nil,  nil,  3,  0.0,  
+		7,  0.0,  9,  0.0,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		8,  0.0,  nil,  nil,  
+		6,  0.0,  10,  0.0,  
+		nil,  nil,  2,  0.0,  
+		4,  0.0,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  1,  0.0 ],  
+	// Dictionary
+	4, [ array: o[5],  size: 9 ],  
+	// Array
+	5, [ nil,  nil,  5,  0.0,  
+		nil,  nil,  3,  0.0,  
+		7,  0.0,  9,  0.0,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		8,  0.0,  nil,  nil,  
+		6,  0.0,  nil,  nil,  
+		nil,  nil,  2,  -11.847099714783,  
+		4,  0.0,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  1,  0.0 ]
+];
+prUnarchive(o,p);
