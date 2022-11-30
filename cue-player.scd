@@ -1,5 +1,5 @@
 (
-var folder = "/Users/macprocomputer/Documents/_CREATING/_CONTRACT-WORK/TheCube-Player-Blake-Proj/Blake Tracks for Spacialization/";
+var folder = thisProcess.nowExecutingPath.dirname+/+"Blake Tracks for Spacialization";
 var files = Dictionary.new;
 var movements = Dictionary.new;
 var master_cues;
@@ -81,7 +81,7 @@ s.options.numOutputBusChannels_(max_speakers);
 s.options.sampleRate_(48000);
 s.options.numWireBufs_(512);
 s.waitForBoot{
-	var play_cue, win, scroll_view, up_next_buttons, up_next = 0, set_up_next, scroll_width, display_cue, cue_displays, group, master_vol_bus, save_cue_vols;
+	var play_cue, win, scroll_view, up_next_buttons, up_next = 0, set_up_next, scroll_width, display_cue, cue_displays, group, master_vol_bus, save_cue_vols, master_vol_sl, play_and_advance_cue;
 
 	Buffer.freeAll;
 	Window.closeAll;
@@ -185,19 +185,25 @@ s.waitForBoot{
 		.action_{
 			play_cue.(master_counter)
 		};
+
 		up_next_buttons[master_counter] = Button(scroll_view,Rect(label_width + button_width,y,button_width,height))
-		.action_{
+		.action_({
 			set_up_next.(master_counter);
-		};
+		});
+
 		cue_dict["volume-slider"] = EZSlider(scroll_view,Rect(label_width + (button_width*2),y,sl_width,20),"Vol",\db.asSpec,{
 			arg sl;
 			cue_dict["vol-bus"].set(sl.value);
 		},initVal:cue_dict["cue-loudness"],layout:'horz',labelWidth:40);
 	};
 
-	Button(win,Rect(scroll_width,(win.bounds.height/2) - 30,win.bounds.width-scroll_width,60))
+	Button(win,Rect(scroll_width,(win.bounds.height/2) - 30,win.bounds.width-(scroll_width+60),60))
 	.states_([["Play Next",Color.black,Color.green]])
 	.action_{
+		play_and_advance_cue.value;
+	};
+
+	play_and_advance_cue = {
 		play_cue.(up_next);
 		set_up_next.(up_next+1);
 	};
@@ -224,13 +230,13 @@ s.waitForBoot{
 		cue_displays[pos].string_(string);
 	};
 
-	Button(win,Rect(win.bounds.width-100,win.bounds.height-20,100,20))
+	Button(win,Rect(win.bounds.width-160,win.bounds.height-20,100,20))
 	.states_([["Stop All",Color.black,Color.red]])
 	.action_{
 		group.set(\gate,0);
 	};
 
-	Button(win,Rect(win.bounds.width-200,win.bounds.height-20,100,20))
+	Button(win,Rect(win.bounds.width-260,win.bounds.height-20,100,20))
 	.states_([["Save Cue Vols"]])
 	.action_{
 		save_cue_vols.value;
@@ -248,6 +254,29 @@ s.waitForBoot{
 		};
 
 		saver.writeArchive(folder+/+"cue-vols.scarchive");
+	};
+
+	master_vol_sl = EZSlider(win,Rect(win.bounds.width-60,0,60,win.bounds.height),"Master",\db.asSpec,{
+		arg sl;
+		master_vol_bus.set(sl.value);
+	},0,layout:'vert');
+
+	MIDIIn.connectAll;
+
+	// nanoKontrol2 slider 8
+	MIDIFunc.cc({
+		arg val;
+		fork({
+			master_vol_sl.valueAction_(master_vol_sl.controlSpec.map(val/127));
+		},AppClock);
+	},7);
+
+	win.view.keyDownAction_{
+		arg view, char, modifiers, unicode, keycode, key;
+		// [view, char, modifiers, unicode, keycode, key].postln;
+		if(unicode == 32){
+			play_and_advance_cue.value;
+		};
 	};
 
 	set_up_next.(0);
