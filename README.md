@@ -29,9 +29,9 @@ The Google sheet needs to be downloaded as a `tsv` file so that the software can
 
 Once loaded, the GUI is pretty self explanatory. Hitting spacebar will advance cues. The master fader is hardcoded to be MIDI CC 7, but this could easily be changed in the code.
 
-### Per Cue Volume control
+### Per Cue Volume Control
 
-Each cue has an independent volume control. Note that this value does not exist in the spreadsheet because the spreadsheet contains specific information for each individual _file_. A cue can have more than one file, so it is stored outside the spreadsheet (as a SuperCollier `Object.writeArchive` file called `cue-vols.scarchive`). These cue volumes can be saved by pressing the "Save Cue Vols" button. They save as a SuperCollider nested `Dictionary` using the movement number and cue number as keys.
+In the GUI each cue has an independent volume control (in dB). Note that this value does not exist in the spreadsheet because the spreadsheet contains specific information for each individual _file_. A cue can have more than one file, so the per cue volume control is stored separate from the spreadsheet (as a SuperCollier `Object.writeArchive` file called `cue-vols.scarchive`). The cue volumes set in the GUI can be saved by pressing the "Save Cue Vols" button. They save as a nested `Dictionary` using the movement number and cue number as keys. When the script is run, the software loads `cue-vols.scarchive` automatically. If any cues are not found in the file, they default to 0 dB.
 
 ## Dependencies
 
