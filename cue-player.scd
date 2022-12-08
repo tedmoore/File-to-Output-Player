@@ -1,18 +1,19 @@
 (
-var folder = thisProcess.nowExecutingPath.dirname+/+"Blake Tracks for Spacialization";
+var folder = thisProcess.nowExecutingPath.dirname;
 var files = Dictionary.new;
 var movements = Dictionary.new;
 var master_cues;
 var csv_data = CSVFileReader.read(folder+/+"data.tsv",delimiter:$\t,skipEmptyLines:true);
 
-var max_speakers = 2;
+var max_speakers = 124;
 
 var cue_loudnesses = Object.readArchive(folder+/+"cue-vols.scarchive");
 
 SelectFiles(folder).do{
-	arg fullpath;
+	arg fullpath, i;
 	var pn = PathName(fullpath);
 	var filename = pn.fileName;
+	// "%:\t%\t%".format(i,filename,fullpath).postln;
 	files[filename] = fullpath;
 };
 
@@ -34,10 +35,6 @@ csv_data[1..].do{
 
 	files[line_dict["file"]] ?? {"File not found: %".format(line_dict["file"]).error};
 
-	/*	if(SoundFile.use(files[line_dict["file"]],{arg sf; sf.numChannels;}) != 1){
-	"File has more than one channel: %".format(line_dict["file"]).warn;
-	};*/
-
 	if(movements[line_dict["movement"]].isNil){
 		movements[line_dict["movement"]] = Dictionary.new;
 	};
@@ -46,7 +43,10 @@ csv_data[1..].do{
 		movements[line_dict["movement"]][line_dict["cue"]] = Dictionary.newFrom(["files",List.new]);
 	};
 
-	movements[line_dict["movement"]][line_dict["cue"]]["files"].add(line_dict);
+	files[line_dict["file"]] !? {
+		movements[line_dict["movement"]][line_dict["cue"]]["files"].add(line_dict);
+	};
+
 	movements[line_dict["movement"]][line_dict["cue"]]["movement"] = line_dict["movement"];
 	movements[line_dict["movement"]][line_dict["cue"]]["cue"] = line_dict["cue"];
 };
@@ -80,8 +80,9 @@ movements.keys.asArray.sort.do{
 s.options.numOutputBusChannels_(max_speakers);
 s.options.sampleRate_(48000);
 s.options.numWireBufs_(512);
+s.options.device_("AggregateFocusRite+Dante");
 s.waitForBoot{
-	var play_cue, win, scroll_view, up_next_buttons, up_next = 0, set_up_next, scroll_width, display_cue, cue_displays, group, master_vol_bus, save_cue_vols, master_vol_sl, play_and_advance_cue;
+	var play_cue, win, scroll_view, up_next_buttons, up_next = 0, set_up_next, scroll_width, display_cue, cue_displays, group, master_vol_bus, save_cue_vols, master_vol_sl, play_and_advance_cue, spacebar_is_up = true;
 
 	Buffer.freeAll;
 	Window.closeAll;
@@ -95,11 +96,12 @@ s.waitForBoot{
 
 	// load all buffers
 	master_cues.do{
-		arg cue_dict;
+		arg cue_dict, i;
+		"Cue %".format(i).postln;
 		cue_dict["files"].do{
 			arg file_dict;
 			var full_path = files[file_dict["file"]];
-			// full_path.postln;
+			// "\tloading: %".format(full_path).postln;
 			file_dict["buffer"] = Buffer.read(s,full_path);
 		};
 	};
@@ -132,7 +134,7 @@ s.waitForBoot{
 				sig = sig * env;
 				sig = sig * In.kr(master_vol_bus).dbamp;
 
-				"\t% to speakers: ".format(file_dict["file"]).post;
+				"\t%\tloudness %\tto speakers: ".format(file_dict["file"],file_dict["loudness"]).post;
 				file_dict["speakers"].do{
 					arg spk;
 					"% ".format(spk).post;
@@ -182,16 +184,18 @@ s.waitForBoot{
 		StaticText(scroll_view,Rect(0,y,label_width,height)).string_("Mvt: % Cue: %".format(cue_dict["movement"],cue_dict["cue"]));
 		Button(scroll_view,Rect(label_width,y,button_width,height))
 		.states_([["Play"]])
+		.canFocus_(false)
 		.action_{
 			play_cue.(master_counter)
 		};
 
 		up_next_buttons[master_counter] = Button(scroll_view,Rect(label_width + button_width,y,button_width,height))
+		.canFocus_(false)
 		.action_({
 			set_up_next.(master_counter);
 		});
 
-		cue_dict["volume-slider"] = EZSlider(scroll_view,Rect(label_width + (button_width*2),y,sl_width,20),"Vol",\db.asSpec,{
+		cue_dict["volume-slider"] = EZSlider(scroll_view,Rect(label_width + (button_width*2),y,sl_width,20),"Vol",ControlSpec(-130,24),{
 			arg sl;
 			cue_dict["vol-bus"].set(sl.value);
 		},initVal:cue_dict["cue-loudness"],layout:'horz',labelWidth:40);
@@ -199,6 +203,7 @@ s.waitForBoot{
 
 	Button(win,Rect(scroll_width,(win.bounds.height/2) - 30,win.bounds.width-(scroll_width+60),60))
 	.states_([["Play Next",Color.black,Color.green]])
+	.canFocus_(false)
 	.action_{
 		play_and_advance_cue.value;
 	};
@@ -232,12 +237,14 @@ s.waitForBoot{
 
 	Button(win,Rect(win.bounds.width-160,win.bounds.height-20,100,20))
 	.states_([["Stop All",Color.black,Color.red]])
+	.canFocus_(false)
 	.action_{
 		group.set(\gate,0);
 	};
 
 	Button(win,Rect(win.bounds.width-260,win.bounds.height-20,100,20))
 	.states_([["Save Cue Vols"]])
+	.canFocus_(false)
 	.action_{
 		save_cue_vols.value;
 	};
@@ -256,7 +263,7 @@ s.waitForBoot{
 		saver.writeArchive(folder+/+"cue-vols.scarchive");
 	};
 
-	master_vol_sl = EZSlider(win,Rect(win.bounds.width-60,0,60,win.bounds.height),"Master",\db.asSpec,{
+	master_vol_sl = EZSlider(win,Rect(win.bounds.width-60,0,60,win.bounds.height),"Master",ControlSpec(-20,20),{
 		arg sl;
 		master_vol_bus.set(sl.value);
 	},0,layout:'vert');
@@ -271,13 +278,22 @@ s.waitForBoot{
 		},AppClock);
 	},7);
 
-	win.view.keyDownAction_{
+	win.view.keyDownAction_({
 		arg view, char, modifiers, unicode, keycode, key;
 		// [view, char, modifiers, unicode, keycode, key].postln;
-		if(unicode == 32){
+		if(spacebar_is_up.and(unicode == 32)){
 			play_and_advance_cue.value;
 		};
-	};
+
+		spacebar_is_up = false;
+	})
+	.keyUpAction_({
+		arg view, char, modifiers, unicode, keycode, key;
+
+		if(unicode == 32){
+			spacebar_is_up = true;
+		}
+	});
 
 	set_up_next.(0);
 

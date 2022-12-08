@@ -1,20 +1,20 @@
 var o, p;
 o = [
 	Dictionary.prNew,  Array.prNew(32),  Dictionary.prNew,  Array.prNew(64),  
-	Dictionary.prNew,  Array.prNew(64)
+	Dictionary.prNew,  Array.prNew(64),  Dictionary.prNew,  Array.prNew(64)
 ];
 p = [
 	// Dictionary
-	0, [ array: o[1],  size: 2 ],  
+	0, [ array: o[1],  size: 3 ],  
 	// Array
 	1, [ nil,  nil,  nil,  nil,  
-		nil,  nil,  nil,  nil,  
-		nil,  nil,  2,  o[2],  
-		nil,  nil,  nil,  nil,  
-		nil,  nil,  nil,  nil,  
+		nil,  nil,  3,  o[2],  
+		nil,  nil,  2,  o[4],  
 		nil,  nil,  nil,  nil,  
 		nil,  nil,  nil,  nil,  
-		nil,  nil,  1,  o[4] ],  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  1,  o[6] ],  
 	// Dictionary
 	2, [ array: o[3],  size: 11 ],  
 	// Array
@@ -35,23 +35,42 @@ p = [
 		nil,  nil,  nil,  nil,  
 		nil,  nil,  1,  0.0 ],  
 	// Dictionary
-	4, [ array: o[5],  size: 9 ],  
+	4, [ array: o[5],  size: 11 ],  
 	// Array
-	5, [ nil,  nil,  5,  0.0,  
+	5, [ 11,  -28.0,  5,  4.0,  
+		nil,  nil,  3,  -9.0,  
+		7,  -3.0,  9,  0.0,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		8,  3.0,  nil,  nil,  
+		6,  0.0,  10,  0.0,  
+		nil,  nil,  2,  -7.1460674157303,  
+		4,  -5.0,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  nil,  nil,  
+		nil,  nil,  1,  -8.0 ],  
+	// Dictionary
+	6, [ array: o[7],  size: 9 ],  
+	// Array
+	7, [ nil,  nil,  5,  4.0,  
 		nil,  nil,  3,  0.0,  
-		7,  0.0,  9,  0.0,  
+		7,  4.0,  9,  0.0,  
 		nil,  nil,  nil,  nil,  
 		nil,  nil,  nil,  nil,  
 		nil,  nil,  nil,  nil,  
 		nil,  nil,  nil,  nil,  
 		nil,  nil,  nil,  nil,  
-		8,  0.0,  nil,  nil,  
-		6,  0.0,  nil,  nil,  
+		8,  6.6966292134831,  nil,  nil,  
+		6,  10.404494382022,  nil,  nil,  
 		nil,  nil,  2,  0.0,  
-		4,  0.0,  nil,  nil,  
+		4,  20.539325842697,  nil,  nil,  
 		nil,  nil,  nil,  nil,  
 		nil,  nil,  nil,  nil,  
 		nil,  nil,  nil,  nil,  
-		nil,  nil,  1,  0.0 ]
+		nil,  nil,  1,  18.808988764045 ]
 ];
 prUnarchive(o,p);
