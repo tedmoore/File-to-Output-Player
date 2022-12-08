@@ -1,4 +1,4 @@
-# File-to-Speaker Player
+# File-to-Output Player
 
 SuperCollider program for playing audio files to specific speaker outputs
 
